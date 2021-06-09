@@ -44,6 +44,9 @@ client = discord.Client()
 @client.event
 async def on_ready():
     channel = client.get_channel(851958776168841246)
+
+    await channel.send("Connected")
+
     page = r.subreddit("CrackWatch").stream.submissions()
     for post in page:
         flair = post.link_flair_text

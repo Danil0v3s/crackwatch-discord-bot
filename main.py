@@ -6,6 +6,8 @@ client_secret = os.environ.get("client_secret")
 client_key = os.environ.get("client_key")
 started_at = datetime.utcnow().timestamp()
 
+print(client_id, client_secret, client_key)
+
 r = praw.Reddit(
     client_id = client_id,
     client_secret = client_secret,
@@ -55,5 +57,5 @@ async def on_ready():
         ) and post.created_utc >= started_at:
             await send_submission(post, channel)
 
-
+print("Connecting")
 client.run(client_key)

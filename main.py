@@ -57,5 +57,6 @@ async def on_ready():
         ) and post.created_utc >= started_at:
             await send_submission(post, channel)
 
-print("Connecting")
-client.run(client_key)
+if __name__ == "__main__":
+    print("Connecting")
+    client.run(client_key)

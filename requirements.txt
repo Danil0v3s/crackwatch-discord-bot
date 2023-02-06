@@ -3,3 +3,6 @@ discord.py==1.7.2
 requests==2.25.1
 urllib3==1.26.5
 websocket-client==1.0.1
+pathspec==0.8.1
+praw==7.2.0
+prawcore==2.1.0

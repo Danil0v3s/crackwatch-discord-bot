@@ -1,0 +1,8 @@
+version: "3"
+
+services:
+  crackwatch:
+    build: .
+    restart: always
+    env_file:
+      - $HOME/crackwatch-discord-bot/crackwatch.env

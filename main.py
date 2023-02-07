@@ -1,22 +1,17 @@
-import praw, discord, os
+import asyncpraw, discord, os, asyncio
 from datetime import datetime
+from dotenv import load_dotenv
+
+load_dotenv()
 
 reddit_client_id = os.environ.get("reddit_client_id")
 reddit_client_secret = os.environ.get("reddit_client_secret")
 
 discord_client_key = os.environ.get("discord_client_key")
-discord_channel_id = os.environ.get("discord_channel_id")
+discord_channel_id = int(os.environ.get("discord_channel_id"))
 
 started_at = datetime.utcnow().timestamp()
-
-r = praw.Reddit(
-    client_id = reddit_client_id,
-    client_secret = reddit_client_secret,
-    user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 Safari/537.36",
-    check_for_async=False,
-)
-
-client = discord.Client()
+discord_client = discord.Client()
 
 async def send_submission(submission, channel):
     embed = discord.Embed()
@@ -41,18 +36,27 @@ async def send_submission(submission, channel):
 
     await channel.send(embed=embed)
 
-@client.event
+@discord_client.event
 async def on_ready():
-    channel = client.get_channel(discord_channel_id)
+    print("connected to channel")
 
-    page = r.subreddit("CrackWatch").stream.submissions()
-    for post in page:
-        flair = post.link_flair_text
-        if (
-            flair == "Release" or flair == "New Game Repack"
-        ) and post.created_utc >= started_at:
-            await send_submission(post, channel)
+    reddit = asyncpraw.Reddit(
+        client_id = reddit_client_id,
+        client_secret = reddit_client_secret,
+        user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 Safari/537.36",
+    )
+    channel = discord_client.get_channel(discord_channel_id)
+
+    subreddit = await reddit.subreddit("CrackWatch")
+    while not discord_client.is_closed():
+        async for submission in subreddit.stream.submissions():
+            if (submission.link_flair_text == "Release" or submission.link_flair_text == "New Game Repack") and submission.created_utc >= started_at:
+                print("new submission, sending...")
+                await send_submission(submission, channel)
+
+def init():
+    print("Connecting...")
+    discord_client.run(discord_client_key)
 
 if __name__ == "__main__":
-    print("Connecting")
-    client.run(discord_client_key)
+   init()

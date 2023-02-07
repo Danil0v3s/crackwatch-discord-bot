@@ -5,4 +5,4 @@ services:
     build: .
     restart: always
     env_file:
-      - $HOME/crackwatch-discord-bot/crackwatch.env
+      - ./crackwatch.env
